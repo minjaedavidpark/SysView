@@ -4,6 +4,7 @@
 //
 #include <ostream>
 
+// Print colorful text to the terminal
 // Usage: std::cout << Color::Modifier(Color::FG_RED) << "This is red" << Color::Modifier(Color::FG_DEFAULT) << std::endl;
 namespace Color {
     enum Code {
