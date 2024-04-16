@@ -9,6 +9,9 @@
 #include <mach/mach_error.h>
 #include <mach/mach_host.h>
 #include <mach/vm_map.h>
+#include <cmath>
+#include <iomanip>
+
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -159,9 +162,23 @@ float getSystemMemoryUsagePercentage()
         if (totalPages > 0.0)
             return (float) (pagesUsed/totalPages);
     }
-    return -1.0f;  // Indicate failure
+    return -1.0f;  // Indicate failureq
 }
 
+void drawStatusBar(float num) {
+    float percentage = num * 10;
+    int roundedPercentage = (int) std::round(percentage);
+
+    for (int i = 0; i < 10; i++) {
+        if (i < roundedPercentage) {
+            std::cout << Color::Modifier(Color::FG_GREEN) << "█" << Color::Modifier(Color::FG_DEFAULT);
+        } else {
+            std::cout << Color::Modifier(Color::FG_RED) << "█" << Color::Modifier(Color::FG_DEFAULT);
+        }
+    }
+
+    std::cout << " ";
+}
 
 
 void writeSysInfo() {
@@ -170,9 +187,16 @@ void writeSysInfo() {
 
     std::cout << "Current time: " << std::ctime(&now_time);
 
-    std::cout << Color::Modifier(Color::FG_GREEN) << "CPU Usage: " << getCpuLoad() * 100 << '%' << Color::Modifier(Color::FG_DEFAULT) << std::endl;
+    float cpuLoad = getCpuLoad();
+    std::cout << Color::Modifier(Color::FG_GREEN) << "CPU Usage: ";
+    drawStatusBar(cpuLoad);
+    std::cout << std::setprecision(4) << cpuLoad * 100 << '%' << Color::Modifier(Color::FG_DEFAULT) << std::endl;
 
-    std::cout << Color::Modifier(Color::FG_RED) << "Memory Usage: " << getSystemMemoryUsagePercentage() * 100 << '%' << Color::Modifier(Color::FG_DEFAULT) << std::endl;
+
+    float memUsage = getSystemMemoryUsagePercentage();
+    std::cout << Color::Modifier(Color::FG_RED) << "Memory Usage: ";
+    drawStatusBar(memUsage);
+    std::cout << memUsage * 100 << '%' << Color::Modifier(Color::FG_DEFAULT) << std::endl;
 
 }
 
